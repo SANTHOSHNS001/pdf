@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>PDF Editor</title>
+  <!-- Include necessary libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.16.0/pdf-lib.js"></script>
+</head>
+<body>
+  <div>
+    <button onclick="addTextInputField()">Add Text Input Field</button>
+    <button onclick="addCheckbox()">Add Checkbox</button>
+    <button onclick="savePDF()">Save PDF</button>
+    <button onclick="clearAll()">Clear All</button>
+    <button onclick="zoomIn()">Zoom In</button>
+    <button onclick="zoomOut()">Zoom Out</button>
+    <button onclick="navigateNext()">Next Page</button>
+    <button onclick="navigatePrevious()">Previous Page</button>
+    <button onclick="undo()">Undo</button>
+    <button onclick="redo()">Redo</button>
+    <button onclick="toggleHighlighter()">Toggle Highlighter</button>
+    <button onclick="togglePen()">Toggle Pen</button>
+  </div>
+  <canvas id="pdfCanvas"></canvas>
+  <script>
+    let pdfDoc = null;
+    let currentPage = 1;
+    let canvas = null;
+    let context = null;
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let highlighterColor = 'yellow';
+    let penColor = 'black';
+
+    async function loadPDF() {
+      const url = 'sample.pdf'
+      const pdfBytes = await fetch(url).then(res => res.arrayBuffer());
+      pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+      renderPage();
+    }
+
+    async function renderPage() {
+      canvas = document.getElementById('pdfCanvas');
+      context = canvas.getContext('2d');
+      const page = pdfDoc.getPage(currentPage);
+      const viewport = page.getViewport({ scale: 1 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      await page.render(renderContext);
+    }
+
+    function addTextInputField() {
+      // Implement adding text input field to PDF
+    }
+
+    function addCheckbox() {
+      // Implement adding checkbox to PDF
+    }
+
+    async function savePDF() {
+      const pdfBytes = await pdfDoc.save();
+      // Implement saving PDF logic (e.g., downloading)
+    }
+
+    function clearAll() {
+      // Clear all signatures and annotations
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function zoomIn() {
+      // Implement zoom in logic
+    }
+
+    function zoomOut() {
+      // Implement zoom out logic
+    }
+
+    function navigateNext() {
+      currentPage++;
+      renderPage();
+    }
+
+    function navigatePrevious() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderPage();
+      }
+    }
+
+    function undo() {
+      // Implement undo logic
+    }
+
+    function redo() {
+      // Implement redo logic
+    }
+
+    function toggleHighlighter() {
+      // Implement highlighter tool logic
+    }
+
+    function togglePen() {
+      // Implement pen tool logic
+    }
+
+    // Event listeners for drawing
+    // canvas.addEventListener('mousedown', (e) => {
+    //   isDrawing = true;
+    //   [lastX, lastY] = [e.offsetX, e.offsetY];
+    // });
+
+    // canvas.addEventListener('mousemove', draw);
+    // canvas.addEventListener('mouseup', () => isDrawing = false);
+    // canvas.addEventListener('mouseout', () => isDrawing = false);
+
+    function draw(e) {
+      if (!isDrawing) return;
+      context.beginPath();
+      context.moveTo(lastX, lastY);
+      context.lineTo(e.offsetX, e.offsetY);
+      context.strokeStyle = penColor;
+      context.lineWidth = 2;
+      context.stroke();
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    }
+
+    // Load PDF when the page loads
+    loadPDF();
+  </script>
+</body>
+</html>
